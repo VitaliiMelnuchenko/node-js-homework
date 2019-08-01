@@ -7,8 +7,8 @@ module.exports = (req, res, next) => {
         req.params.userId = decoded.userId;
         next();
     } catch(err) {
-        return res.status(401).json({
-            message: 'Auth failed'
-        });
+        const error = new Error('Auth Failed');
+        error.status = 401;
+        next(error)
     }
 };
