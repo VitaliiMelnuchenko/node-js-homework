@@ -2,10 +2,21 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const joi = require('@hapi/joi');
 
 const User = require('../models/user');
 
 router.post('/signup', (req, res, next) => {
+    const schema = joi.object().keys({
+        username: joi.string().min(6).max(50).email({ minDomainSegments: 2 }).required(),
+        password: joi.string().regex(/^[a-zA-Z0-9]{6,16}$/).required()
+    }).with('username', 'password');
+    const bodyVal = joi.validate({ username: req.body.username, password: req.body.password }, schema);
+    if (bodyVal.error !== null) {
+        return res.status(400).json({
+            message: 'Bad request'
+        });
+    }
     User.findOne({ username: req.body.username })
     .then((foundUser) => {
         if (foundUser) {
@@ -47,6 +58,7 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
+    console.log(req.body);
     User.findOne({ username: req.body.username })
     .then(foundUser => {
         console.log(foundUser);

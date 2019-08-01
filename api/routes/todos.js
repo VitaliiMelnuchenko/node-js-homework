@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const checkAuth = require('../middleware/check-auth')
+const checkAuth = require('../middleware/check-auth');
+const joi = require('@hapi/joi');
 
 const User = require('../models/user');
 const Todo = require('../models/todo');
@@ -38,6 +39,17 @@ router.post('/', checkAuth, (req, res, next) => {
         title: req.body.title,
         description: req.body.description,
         owner: req.params.userId
+    };
+    const schema = joi.object().keys({
+        title: joi.string().max(100).required(),
+        description: joi.string().max(300)
+    }).with('title', []).without('description', []);
+    const bodyVal = joi.validate({ title: req.body.title }, schema);
+    if (bodyVal.error !== null) {
+        return res.status(400).json({
+            message: 'Bad request',
+            place: 'from_joi'
+        });
     }
     Todo.create(todoObj)
     .then(todo => {
