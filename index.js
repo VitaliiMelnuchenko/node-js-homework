@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const todoRoutes = require('./api/routes/todos');
 const userRoutes = require('./api/routes/users');
-mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost/todo-homework-db-vit-mel', {useNewUrlParser: true});
 
 app.use(bodyParser.urlencoded({extended: true}));
 mongoose.set('useCreateIndex', true);
